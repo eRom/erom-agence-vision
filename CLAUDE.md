@@ -50,8 +50,9 @@ C'est la seule preuve que le manifeste charge ce qu'on croit : un dossier
 
 ## Publication
 
-Non publié à ce jour. La publication ne se fait pas à la main : la skill `release`
-du plugin `erom-dev-plugin` la porte de bout en bout, depuis ce dépôt.
+Publié sur `erom-marketplace`, activé en global. La publication ne se fait pas à la
+main : la skill `release` du plugin `erom-dev-plugin` la porte de bout en bout, depuis
+ce dépôt.
 
 ```
 /erom-dev-plugin:release
@@ -62,22 +63,29 @@ et pousse ce dépôt, puis met à jour `~/dev/erom-marketplace` (entrée du plug
 metadata, README), et vérifie la CI. Toujours dans cet ordre : le plugin d'abord, 
 la marketplace ensuite, parce que l'entrée pointe `ref: main` sur ce dépôt.
 
-Sur une **première** publication, elle s'arrête et demande : l'entrée à créer
-réclame une description, une source `git-subdir` et un choix de `strict`. C'est
-le moment de les préparer, pas avant.
+L'entrée existe désormais, les publications suivantes sont de simples bumps et
+la skill ne demande plus rien. Source `git-subdir` sur ce dépôt, `path: "plugin"`,
+`ref: "main"`, `strict: true`, comme les neuf autres plugins.
 
 ## État actuel - 2026-09-05
 
-v0.1.0 écrite et recettée en local. Non publiée.
+v0.1.1 publiée, activée en global, recettée de bout en bout.
 
 | Élément | État |
 |---|---|
-| `plugin/skills/gate-vision/` | `SKILL.md` + 5 `references/`, recettée |
-| `plugin/agents/gemini-vision.md` | transport agy, recetté |
+| `plugin/skills/gate-vision/` | `SKILL.md` + 5 `references/` |
+| `plugin/agents/gemini-vision.md` | transport agy |
 | Critères d'acceptation AC-1 à AC-7 | tous verts, 05/09/2026 |
-| Publication marketplace | non faite |
-| `~/.claude/skills/erom-taste-gate/` | encore en place, à corbeiller APRÈS activation globale |
+| Publication marketplace | v0.1.1, CI verte sur `a7be6bf` |
+| Activation | `"erom-vision@erom-marketplace": true` dans `~/.claude/settings.json` |
+| `~/.claude/skills/erom-taste-gate/` | corbeillée, le plugin la remplace partout |
 
-La skill globale `erom-taste-gate` reste la seule opérationnelle tant que `erom-vision`
-n'est pas activé dans `~/.claude/settings.json` : la corbeiller avant laisserait Romain
-sans gate du tout.
+Le gate n'a plus de dépendance locale : il tourne depuis n'importe quel répertoire,
+y compris ceux qui n'activent pas `erom-devil`. Vérifié par un run réel depuis
+`~/dev/macronisme-le-bilan`.
+
+Le seul prérequis restant est Antigravity CLI (`agy`), installé et authentifié. Sans
+lui, le gate rend un bloc d'échec explicite, jamais un PASS silencieux.
+
+Les gotchas de ce dépôt sont dans `_memory_/gotchas.md`, chacun avec sa commande de
+re-vérification.
