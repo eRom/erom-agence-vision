@@ -1,0 +1,14 @@
+{
+  "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "erom-vision",
+  "description": "Juge vision automatique d'un rendu UI contre la grille eRom : verdict PASS/FAIL ancré sur ce qui est vu, avant de montrer le rendu.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Romain Ecarnot",
+    "url": "https://github.com/eRom"
+  },
+  "repository": "https://github.com/eRom/erom-agence-vision",
+  "license": "MIT",
+  "keywords": ["vision", "ui", "design-system", "revue-visuelle", "screenshot", "gemini", "frontend", "taste-gate"],
+  "skills": "./skills/"
+}
