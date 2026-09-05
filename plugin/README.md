@@ -9,6 +9,16 @@ Plugin Claude Code. Juge vision automatique d'un rendu UI contre la grille eRom 
 /plugin install erom-vision@erom-marketplace
 ```
 
+## Prérequis
+
+Le juge tourne sur Antigravity CLI (`agy`), qui doit être installé et authentifié :
+
+1. installer Antigravity depuis https://antigravity.google
+2. lancer `agy` une fois dans un vrai terminal, pour finir l'OAuth
+
+Sans lui, le gate ne rend jamais un PASS silencieux : il affiche un bloc d'échec
+explicite qui dit que rien n'a été jugé.
+
 ## Les skills
 
 | Skill | Invocation | Ce qu'elle fait |
