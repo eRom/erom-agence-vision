@@ -196,3 +196,51 @@ fichiers.
 Les étapes 1 à 3 sont visibles hors de la session (dépôt public, config globale) :
 demander l'accord de Romain avant de les lancer. La skill `erom-dev-plugin:release`
 couvre exactement ce cycle, la préférer à un enchaînement manuel.
+
+
+---
+
+## Issue (2026-09-05)
+
+**Publié et actif.** `erom-vision` v0.1.0 vit sous
+`~/.claude/plugins/cache/erom-marketplace/erom-vision/0.1.0/`, activé en global
+(`~/.claude/settings.json:267`). Contenu conforme au périmètre, vérifié fichier par
+fichier : 1 agent (`agents/gemini-vision.md`), 1 skill (`skills/gate-vision/`) et ses 5
+`references/`, rien d'autre. L'ancienne skill `~/.claude/skills/erom-taste-gate/` a été
+retirée.
+
+**Écart au brief, en mieux.** Le préflight de l'Étape 2 ne grepe plus `settings.json` à la
+recherche du flag du plugin, comme ce brief le demandait. Il teste l'existence réelle du
+fichier de l'agent, résolu depuis `BASE` :
+
+```bash
+ls "<BASE>/../../agents/gemini-vision.md" >/dev/null 2>&1 && echo "GATE_OK" || echo "GATE_INDISPONIBLE"
+```
+
+Il vérifie un artefact au lieu d'une déclaration de config. Un plugin activé mais installé
+à moitié ne peut donc plus rendre un faux `GATE_OK`. La skill note aussi le piège associé :
+`<BASE>` est substitué en littéral, un `$BASE` vide testerait `/../../agents/…` et rendrait
+un faux `GATE_INDISPONIBLE`.
+
+**Surface de config alignée le même jour** (session `claude-flora-s95e`) :
+
+- `~/.claude/skills/erom-design/SKILL.md` : nouvelle puce de doctrine nommant le gate comme
+  étape avant de montrer un rendu. C'était le trou réel. La doctrine frontend, que le
+  CLAUDE.md impose de charger avant tout travail UI, ne pointait vers aucun juge : zéro
+  occurrence de « gate », « juge » ou « verdict » dans ses 48 lignes. C'est l'explication
+  mécanique de l'incident du 07/08/2026 (24 composants livrés sans un verdict).
+- `~/.claude/notes/2026-08-15-grille-effort-skills.md` (lignes 55 et 84) et
+  `~/.claude/notes/2026-09-02-prompting-fable-51-opus-5-zoom-vision.md` : renommés vers
+  `erom-vision:gate-vision`.
+- `~/.claude/erom-playbook.md:125` laissé intact : c'est une ancre d'incident, et son
+  corollaire (« un skill qui dépend d'un agent de plugin doit déclarer cette dépendance et
+  vérifier sa disponibilité avant de jeter son travail ») reste vrai mot pour mot, y compris
+  pour ce plugin.
+- La note 2026-09-02 porte une gate chantier **non franchie** sur un « juge vision Claude
+  natif ». Elle le reste : erom-vision garde le transport Gemini via agy et ne l'entame pas.
+
+**Non fait, à décider.** `references/ds-perso.md` (456 lignes, 0 caractère accentué) et
+`references/ds-institut.md` (118 lignes, 5) de la skill `erom-design` portent la même scorie
+d'accents que son `SKILL.md`, lui corrigé. Ces deux fichiers contiennent des identifiants de
+code, des noms de tokens et des valeurs CSS : passe dédiée avec relecture des blocs de code,
+jamais un remplacement automatique.

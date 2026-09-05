@@ -23,10 +23,16 @@ Quel que soit le chemin — verdict rendu, transport en échec, gate indisponibl
 finale est l'un des trois blocs de ce fichier, recopié caractère pour caractère (les `═`, le
 `→`, l'ordre des lignes), les seuls `<…>` substitués :
 
-1. gate indisponible → le message ⚠️ de l'Étape 2 ;
-2. `status: "error"` → le bloc `══════ TASTE GATE ÉCHOUÉ (transport) ══════` de l'Étape 3 ;
-3. `status: "ok"` → le bloc `══════ TASTE GATE ══════` de l'Étape 3, suivi du tableau des
+1. le spawn de l'agent a lui-même échoué, l'agent n'a jamais tourné → le message ⚠️ de
+   l'Étape 2 ;
+2. l'agent a rendu `status: "error"` → le bloc `══════ TASTE GATE ÉCHOUÉ (transport) ══════` ;
+3. l'agent a rendu `status: "ok"` → le bloc `══════ TASTE GATE ══════`, suivi du tableau des
    échecs si FAIL, de `remarque_libre`, puis du next step.
+
+**L'aiguillage est mécanique, il ne s'interprète pas.** Le bloc 1 a une seule cause : l'agent
+n'existe pas pour le harness. Dès qu'un `status` te revient, il est exclu — c'est le bloc 2 ou
+le bloc 3, quelle qu'en soit la raison, `agy` introuvable compris. Confondre les deux envoie
+Romain réparer une installation qui n'a rien.
 
 Rien avant le bloc, aucun préambule. Aucune action proposée qui n'y figure pas : tu n'offres
 jamais d'installer, de configurer ni de réparer quoi que ce soit. Un gate qui répond dans ses
@@ -35,9 +41,12 @@ tourné — c'est exactement comme ça que 24 composants sont passés sans verdi
 
 L'Étape 4 (`trash "$TMP_DIR"`) tourne dans les trois cas, bloc d'échec compris.
 
-> Mesure du 05/09/2026 : sur le chemin d'échec transport, deux runs sur deux ont écrit leur
-> propre message d'erreur au lieu du bloc, l'un proposant d'installer `agy` — ce que ce
-> fichier ne demande nulle part. Le chemin nominal, lui, rendait le bloc correctement.
+> Mesures du 05/09/2026, sur le chemin d'échec transport. Sans cette règle, deux runs sur
+> deux ont écrit leur propre message d'erreur au lieu du bloc, l'un proposant d'installer
+> `agy` — ce que ce fichier ne demande nulle part. Avec la règle mais sans l'aiguillage
+> explicite, un run sur deux prenait encore le bloc 1 sur un `agy` introuvable : la cause
+> réelle était un préflight `ls` qui ratait sa substitution de chemin, désormais supprimé. Le
+> chemin nominal, lui, a toujours rendu le bon bloc.
 
 ## Capture des états d'interaction (avant d'invoquer)
 
@@ -112,33 +121,29 @@ file "$TMP_DIR"/etat-*
 ## Étape 2 — Lancer le juge (transport `erom-vision:gemini-vision`)
 
 **Dépendance déclarée : l'agent de transport du plugin `erom-vision`.** La skill et l'agent
-sont livrés ensemble : si le plugin est installé entier, l'agent est sur le disque à côté de
-la skill. S'il n'y est pas, le juge ne peut pas tourner.
+sont livrés ensemble, donc le seul cas où l'agent manque est un cache de plugins non rechargé.
 
-**Préflight, avant de jeter la moindre capture.** `<BASE>` est le chemin absolu résolu à
-l'Étape 0, substitué ici en littéral : ce n'est PAS une variable shell, un `$BASE` vide
-testerait `/../../agents/…` et rendrait un faux `GATE_INDISPONIBLE`.
+**Aucun préflight en bash.** Le seul juge fiable de l'existence de l'agent est le spawn
+lui-même. (Mesure du 05/09/2026 : un préflight `ls` sur le chemin de l'agent rendait un faux
+`GATE_INDISPONIBLE` dans un run sur deux, parce qu'il reposait sur une substitution de chemin,
+et affichait alors à Romain une « installation incomplète » sur une installation saine.)
 
+Spawn `erom-vision:gemini-vision` directement. Annonce avant le spawn :
+« **Jugement en cours…** le juge vision analyse le screenshot (jusqu'à 9 min). »
 
-```bash
-ls "<BASE>/../../agents/gemini-vision.md" >/dev/null 2>&1 && echo "GATE_OK" || echo "GATE_INDISPONIBLE"
-```
+Si et seulement si le spawn LUI-MÊME échoue — « Agent type not found », l'agent n'a jamais
+tourné, aucun `status` ne revient — **ne continue pas en silence**. Dis à Romain, mot pour
+mot :
 
-Si `GATE_INDISPONIBLE`, **ne jette rien et ne continue pas en silence**. Dis-le à Romain, mot pour mot :
-
-> ⚠️ **Taste gate indisponible.** Le transport `erom-vision:gemini-vision` est introuvable :
-> l'installation du plugin `erom-vision` est incomplète, le juge vision ne peut pas tourner.
-> Deux options : réinstaller le plugin (`/plugin`), ou je te montre le rendu en te disant
-> explicitement qu'aucun jugement automatique ne l'a couvert.
+> ⚠️ **Taste gate indisponible.** L'agent `erom-vision:gemini-vision` n'est pas chargé : le
+> cache de plugins n'a pas été rechargé depuis son installation. Lance `/reload-plugins`, un
+> simple retry ne suffit pas. Sinon je te montre le rendu en te disant explicitement
+> qu'aucun jugement automatique ne l'a couvert.
 
 Puis stop. Un rendu montré sans gate se montre en le disant ; il ne se montre jamais comme s'il avait été
 jugé. (Mesure du 07/08/2026 : sur le DS Institut, l'agent introuvable a fait abandonner le gate en silence,
-24 composants livrés sans un seul verdict, validés par Romain sans qu'il le sache.)
-
-Si `GATE_OK`, spawn `erom-vision:gemini-vision`. Si l'appel échoue quand même sur « Agent type not found »,
-c'est le cache de plugins qui n'est pas rechargé : demande à Romain de lancer `/reload-plugins` (mesuré le
-07/08 sur macronisme : un simple retry ne suffit pas, le reload manuel oui). Annonce avant le spawn :
-« **Jugement en cours…** le juge vision analyse le screenshot (jusqu'à 9 min). »
+24 composants livrés sans un seul verdict, validés par Romain sans qu'il le sache. Mesure du 07/08 sur
+macronisme : après ajout d'un agent, un retry ne suffit pas, le `/reload-plugins` manuel oui.)
 
 Une ligne `SCREENSHOT_<LABEL>:` par capture, dans l'ordre des arguments (label en majuscules),
 puis `GRILLE:`. Le transport gère nativement N inputs étiquetés.
