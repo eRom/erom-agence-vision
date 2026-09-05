@@ -1,4 +1,4 @@
-![erom-vision](assets/plugin.png)
+![erom-vision](assets/erom-vision.png)
 
 # erom-vision
 
