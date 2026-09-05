@@ -68,9 +68,16 @@ le moment de les préparer, pas avant.
 
 ## État actuel - 2026-09-05
 
-Dépôt scaffoldé, aucune skill écrite.
+v0.1.0 écrite et recettée en local. Non publiée.
 
 | Élément | État |
 |---|---|
-| `plugin/skills/` | vide |
+| `plugin/skills/gate-vision/` | `SKILL.md` + 5 `references/`, recettée |
+| `plugin/agents/gemini-vision.md` | transport agy, recetté |
+| Critères d'acceptation AC-1 à AC-7 | tous verts, 05/09/2026 |
 | Publication marketplace | non faite |
+| `~/.claude/skills/erom-taste-gate/` | encore en place, à corbeiller APRÈS activation globale |
+
+La skill globale `erom-taste-gate` reste la seule opérationnelle tant que `erom-vision`
+n'est pas activé dans `~/.claude/settings.json` : la corbeiller avant laisserait Romain
+sans gate du tout.

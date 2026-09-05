@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "required": ["verdict", "score", "failed", "etats_couverts", "remarque_libre"],
+  "additionalProperties": false,
+  "properties": {
+    "verdict": { "type": "string", "enum": ["PASS", "FAIL"] },
+    "score": { "type": "number", "minimum": 0, "maximum": 10 },
+    "failed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["critere", "preuve_observee", "suggestion_courte"],
+        "additionalProperties": false,
+        "properties": {
+          "critere": { "type": "string", "description": "Identifiant exact de la grille, ex. 'C6 — Borders > shadows'" },
+          "preuve_observee": { "type": "string", "description": "Ce qui est VU dans l'image, situé et concret" },
+          "suggestion_courte": { "type": "string", "description": "Une action corrective en une phrase, sans code" }
+        }
+      }
+    },
+    "etats_couverts": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" },
+      "description": "Les états réellement regardés, un par capture reçue, dans les labels des INPUTS (ex. ['repos','hover','focus'])"
+    },
+    "remarque_libre": { "type": "string", "description": "2-4 phrases : impression d'ensemble, non-évaluables, levier n°1 si FAIL" }
+  }
+}
