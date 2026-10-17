@@ -67,16 +67,17 @@ L'entrée existe désormais, les publications suivantes sont de simples bumps et
 la skill ne demande plus rien. Source `git-subdir` sur ce dépôt, `path: "plugin"`,
 `ref: "main"`, `strict: true`, comme les neuf autres plugins.
 
-## État actuel - 2026-09-05
+## État actuel - 2026-10-17
 
-v0.1.1 publiée, activée en global, recettée de bout en bout.
+v0.2.0 publiée, activée en global. Deux skills : le gate design et la lecture vidéo.
 
 | Élément | État |
 |---|---|
 | `plugin/skills/gate-vision/` | `SKILL.md` + 5 `references/` |
 | `plugin/agents/gemini-vision.md` | transport agy |
-| Critères d'acceptation AC-1 à AC-7 | tous verts, 05/09/2026 |
-| Publication marketplace | v0.1.1, CI verte sur `a7be6bf` |
+| `plugin/skills/glimpse-vision/` | `SKILL.md` + `scripts/glimpse.ts` (Bun, sans dépendance), recetté le 17/10/2026 sur mp4, webm, png et un run `claude -p` |
+| Critères d'acceptation AC-1 à AC-7 (gate) | tous verts, 05/09/2026 |
+| Publication marketplace | v0.2.0, CI verte sur `cbf2ccd` |
 | Activation | `"erom-vision@erom-marketplace": true` dans `~/.claude/settings.json` |
 | `~/.claude/skills/erom-taste-gate/` | corbeillée, le plugin la remplace partout |
 
@@ -84,8 +85,12 @@ Le gate n'a plus de dépendance locale : il tourne depuis n'importe quel répert
 y compris ceux qui n'activent pas `erom-devil`. Vérifié par un run réel depuis
 `~/dev/macronisme-le-bilan`.
 
-Le seul prérequis restant est Antigravity CLI (`agy`), installé et authentifié. Sans
-lui, le gate rend un bloc d'échec explicite, jamais un PASS silencieux.
+Prérequis du gate : Antigravity CLI (`agy`), installé et authentifié. Sans lui, le gate
+rend un bloc d'échec explicite, jamais un PASS silencieux.
+
+Prérequis de glimpse : `bun` et `OPENROUTER_API_KEY` ; `ffmpeg` seulement au-delà de
+20 Mo, le script réencode lui-même. Le modèle `elorian/glimpse` est sorti sur OpenRouter le
+16/10/2026 : son contrat (`video_url` en data URL base64) n'a été vérifié que par nos runs.
 
 Les gotchas de ce dépôt sont dans `_memory_/gotchas.md`, chacun avec sa commande de
 re-vérification.
