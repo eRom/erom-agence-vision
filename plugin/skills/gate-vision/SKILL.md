@@ -1,6 +1,6 @@
 ---
 name: gate-vision
-description: "Juge vision automatique d'un rendu UI contre la grille eRom du profil DS actif (perso dark-first ou institut papier/encre ; détection auto par projet, forçable par ds=institut). 10 critères binaires, verdict PASS/FAIL ancré sur ce qui est vu. Accepte plusieurs captures étiquetées par état — repos, survol, focus, après clic — et le verdict dit quels états il couvre. À invoquer AVANT de montrer tout rendu UI à Romain. Le juge ne modifie rien. Triggers : /erom-vision:gate-vision [ds=perso|institut] <image|url> [<image2> …], 'taste gate', 'juge ce screenshot', 'gate design', 'passe le rendu au juge'."
+description: "Juge vision automatique d'un rendu UI contre la grille eRom du profil DS actif (application dark natif macOS, perso dark-first ou institut papier/encre ; détection auto par projet, forçable par ds=application|perso|institut). 10 critères binaires, verdict PASS/FAIL ancré sur ce qui est vu. Accepte plusieurs captures étiquetées par état — repos, survol, focus, après clic — et le verdict dit quels états il couvre. À invoquer AVANT de montrer tout rendu UI à Romain. Le juge ne modifie rien. Triggers : /erom-vision:gate-vision [ds=application|perso|institut] <image|url> [<image2> …], 'taste gate', 'juge ce screenshot', 'gate design', 'passe le rendu au juge'."
 user-invocable: true
 allowed-tools: Read, Bash, Agent, Glob
 ---
@@ -8,7 +8,7 @@ allowed-tools: Read, Bash, Agent, Glob
 # /erom-vision:gate-vision — juge design avant l'œil de Romain
 
 **Usage (5 lignes) :** avant de montrer toute UI à Romain, capturer le rendu →
-`/erom-vision:gate-vision [ds=perso|institut] <image-ou-url> [<image2> …]`. Un juge vision
+`/erom-vision:gate-vision [ds=application|perso|institut] <image-ou-url> [<image2> …]`. Un juge vision
 externe (agy / Gemini, transport `erom-vision:gemini-vision`) évalue les captures contre la
 grille eRom du profil DS actif (10 critères binaires, C1/C2/C9 éliminatoires) et rend PASS ou
 FAIL avec preuves observées et suggestions courtes. FAIL = corriger puis re-juger ;
@@ -77,19 +77,27 @@ couvre que le repos.
 - `GRILLE_COMMUNE` = `BASE/references/grille-commune.md`
 - `GRILLE_PERSO` = `BASE/references/grille-perso.md`
 - `GRILLE_INSTITUT` = `BASE/references/grille-institut.md`
+- `GRILLE_APPLICATION` = `BASE/references/grille-application.md`
+- `DETECT_DS` = `BASE/scripts/detect-ds.sh`
 
-Vérifie l'existence des cinq (un seul appel Bash `ls`). Manquant → STOP « skill corrompu, references/ incomplet ».
+Vérifie l'existence des sept (un seul appel Bash `ls`). Manquant → STOP « skill corrompu, references/ incomplet ».
 
 ## Étape 0bis — Profil DS jugé
 
-1. Un argument exactement égal à `ds=perso` ou `ds=institut` est le sélecteur de
-   profil : le consommer (ce n'est PAS une capture) et retenir ce profil.
-2. Sinon, détection projet (même règle que le routeur erom-design) :
-   `grep -rl "erom-institut" package.json src/ 2>/dev/null` depuis le cwd → un hit = institut.
-3. Sinon : perso (défaut).
+1. Un argument exactement égal à `ds=application`, `ds=perso` ou `ds=institut` est le
+   sélecteur de profil : le consommer (ce n'est PAS une capture) et retenir ce profil.
+2. Sinon, détection projet depuis le cwd, en un appel : `bash "<abs DETECT_DS>"`. Le script
+   suit l'ordre du routeur erom-design v4 (1 institut, 2 perso déjà adopté, 3 application
+   pour toute app : Cargo/Tauri, Electron, Next.js, Astro, 4 perso par défaut) et imprime
+   une ligne `DS=<profil> SIGNAL=<…>`. Retenir `<profil>` tel quel ; ne pas réinterpréter
+   le signal.
 
-`ANNEXE` = `GRILLE_PERSO` ou `GRILLE_INSTITUT` selon le profil retenu. Le profil
-s'affiche dans le verdict (Étape 3).
+`ANNEXE` = `GRILLE_APPLICATION`, `GRILLE_PERSO` ou `GRILLE_INSTITUT` selon le profil
+retenu. Le profil s'affiche dans le verdict (Étape 3).
+
+> Une web app vanilla (JS + CSS sans framework) ne se distingue pas d'un site par ses
+> fichiers : elle tombe sur perso, sauf `ds=application` ou un CLAUDE.md qui déclare le
+> DS application.
 
 ## Étape 1 — Valider et préparer l'entrée (UN appel Bash)
 
@@ -182,7 +190,7 @@ Erreur : <error> — <detail>
 ══════ TASTE GATE ══════
 Verdict : [PASS ✓ | FAIL ✗]  ·  Score : <score>/10
 Juge : gemini (<model>)  ·  Image : <nom du fichier source>
-Profil DS : <perso | institut>  ·  États jugés : <etats_couverts joints par « · »>
+Profil DS : <application | perso | institut>  ·  États jugés : <etats_couverts joints par « · »>
 ```
 
 Si `etats_couverts` ne correspond pas aux captures envoyées (état manquant, ou déclaré sans avoir

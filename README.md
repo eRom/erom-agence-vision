@@ -35,7 +35,7 @@ Coût mesuré : environ 0,06 $ pour 30 s de vidéo, 0,002 $ pour une image.
 
 | Skill | Invocation | Ce qu'elle fait |
 |---|---|---|
-| `gate-vision` | `/erom-vision:gate-vision [ds=perso\|institut] <image\|url> [<image2> ...]` | Juge une ou plusieurs captures d'un rendu UI contre la grille eRom du profil DS actif (perso dark-first ou institut papier/encre) et rend un verdict PASS/FAIL sur 10 critères binaires, ancré sur ce qui est vu. Le juge ne modifie rien. |
+| `gate-vision` | `/erom-vision:gate-vision [ds=application\|perso\|institut] <image\|url> [<image2> ...]` | Juge une ou plusieurs captures d'un rendu UI contre la grille eRom du profil DS actif (application dark natif macOS, perso dark-first ou institut papier/encre) et rend un verdict PASS/FAIL sur 10 critères binaires, ancré sur ce qui est vu. Le juge ne modifie rien. |
 | `glimpse-vision` | `/erom-vision:glimpse-vision <fichier> <question>` | Fait regarder une vidéo (`.mp4`, `.webm`, `.mov`) ou une image par un modèle vision et rend un rapport Markdown horodaté : chronologie, texte à l'écran, anomalies visuelles. Mode `e2e` pour diagnostiquer un test Playwright qui échoue ou un bug d'UI (layout shift, clignotement, overlay qui bloque un clic). |
 
 ## Licence
