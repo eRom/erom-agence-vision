@@ -67,19 +67,19 @@ L'entrée existe désormais, les publications suivantes sont de simples bumps et
 la skill ne demande plus rien. Source `git-subdir` sur ce dépôt, `path: "plugin"`,
 `ref: "main"`, `strict: true`, comme les neuf autres plugins.
 
-## État actuel - 2026-10-23
+## État actuel - 2026-11-13
 
-v0.3.0 publiée, activée en global. Deux skills : le gate design et la lecture vidéo.
+v0.3.1 publiée, activée en global. Deux skills : le gate design et la lecture vidéo. Le juge du gate tourne sur Gemini 4 Hydrogen (`agy --model gemini-4-hydrogen --effort high`) depuis le 13/11/2026.
 
 | Élément | État |
 |---|---|
 | `plugin/skills/gate-vision/` | `SKILL.md` + 6 `references/` + `scripts/detect-ds.sh` |
 | Profils DS du gate | application, perso, institut ; détection alignée sur le routeur erom-design v4, forçable par `ds=` |
 | Profil application | recetté le 23/10/2026 : `ds=application` sur `screen-01.png` du DS rend PASS 10/10 deux fois sur deux, fixture Next sans `ds=` routée en application |
-| `plugin/agents/gemini-vision.md` | transport agy |
+| `plugin/agents/gemini-vision.md` | transport agy, Gemini 4 Hydrogen effort high, recetté le 13/11/2026 (PASS 10/10 sur `screen-01.png`) |
 | `plugin/skills/glimpse-vision/` | `SKILL.md` + `scripts/glimpse.ts` (Bun, sans dépendance), recetté le 17/10/2026 sur mp4, webm, png et un run `claude -p` |
 | Critères d'acceptation AC-1 à AC-7 (gate) | tous verts, 05/09/2026 |
-| Publication marketplace | v0.3.0, CI verte sur `ce70b5d` |
+| Publication marketplace | v0.3.1, CI verte sur `eb47a92` |
 | Activation | `"erom-vision@erom-marketplace": true` dans `~/.claude/settings.json` |
 | `~/.claude/skills/erom-taste-gate/` | corbeillée, le plugin la remplace partout |
 
