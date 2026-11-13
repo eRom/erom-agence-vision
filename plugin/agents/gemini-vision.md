@@ -31,8 +31,8 @@ en bash entre single quotes.
 Ton message final est UN objet JSON sur une ligne, rien d'autre. La clé `devil` est
 historique : c'est elle que la skill parse, ne la renomme pas.
 
-- succès : `{"devil":"gemini","model":"Gemini 3.8 Flash (High)","status":"ok","review":{…}}`
-- échec  : `{"devil":"gemini","model":"Gemini 3.8 Flash (High)","status":"error","error":"CLI_FAILED|PARSE_ERROR|SCHEMA_INVALID|TIMEOUT","detail":"≤ 500 chars"}`
+- succès : `{"devil":"gemini","model":"Gemini 4 Hydrogen (High)","status":"ok","review":{…}}`
+- échec  : `{"devil":"gemini","model":"Gemini 4 Hydrogen (High)","status":"error","error":"CLI_FAILED|PARSE_ERROR|SCHEMA_INVALID|TIMEOUT","detail":"≤ 500 chars"}`
 
 Jamais de texte autour, jamais de bloc de code, jamais de commentaire.
 
@@ -97,7 +97,7 @@ PROMPT_FILE="$TMP_DIR/prompt.txt"
 "$AGY" --dangerously-skip-permissions \
   --add-dir "$(dirname "$IN1_ABS")" --add-dir "$(dirname "$IN2_ABS")" \
   --add-dir "$(dirname "$IN3_ABS")" --add-dir "$TMP_DIR" \
-  --model 'Gemini 3.8 Flash (High)' --print-timeout 8m \
+  --model gemini-4-hydrogen --effort high --print-timeout 8m \
   --print "$(cat "$PROMPT_FILE")" < /dev/null 2>&1 | tail -c 600
 
 echo "---"; echo "TMP_DIR=$TMP_DIR"; echo "OUT_FILE=$OUT_FILE"
@@ -174,7 +174,7 @@ skill affiche un bloc d'échec explicite, c'est le comportement voulu.
 ```bash
 TMP_DIR='<littéral du Step 1>'
 command jq -n -c --slurpfile review '<littéral OUT_FILE>' \
-  '{devil:"gemini",model:"Gemini 3.8 Flash (High)",status:"ok",review:$review[0]}'
+  '{devil:"gemini",model:"Gemini 4 Hydrogen (High)",status:"ok",review:$review[0]}'
 # Garde : TMP_DIR vide (littéral non substitué) ferait trash "" et mettrait le DOSSIER
 # COURANT à la Corbeille.
 [ -n "${TMP_DIR:-}" ] && trash "$TMP_DIR" 2>/dev/null || true
@@ -184,7 +184,7 @@ Enveloppe d'échec, même forme :
 
 ```bash
 command jq -n -c --arg e 'CLI_FAILED' --arg d '<détail ≤ 500 chars>' \
-  '{devil:"gemini",model:"Gemini 3.8 Flash (High)",status:"error",error:$e,detail:$d}'
+  '{devil:"gemini",model:"Gemini 4 Hydrogen (High)",status:"error",error:$e,detail:$d}'
 ```
 
 Le nettoyage tourne dans les deux cas, succès comme échec. Retourne l'enveloppe telle

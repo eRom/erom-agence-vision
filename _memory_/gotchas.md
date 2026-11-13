@@ -1,6 +1,6 @@
 # Gotchas — erom-vision
 
-Dernière mise à jour : 2026-09-05.
+Dernière mise à jour : 2026-11-13.
 
 ## Un préflight qui dépend d'une substitution de chemin rate un run sur deux
 
@@ -55,4 +55,16 @@ lui aussi. Non corrigé ici, c'est un autre dépôt.
 
 ```bash
 cd ~/dev/erom-agence-gemini && claude --plugin-dir plugin plugin details erom-gemini
+```
+
+## agy : le modèle se passe en alias, l'effort en flag
+
+Depuis Gemini 4 Hydrogen (13/11/2026), `agy models` liste des ids suffixés par effort
+(`gemini-4-hydrogen-high`, `-low`, …) mais accepte l'alias nu `--model gemini-4-hydrogen`
+combiné à `--effort low|medium|high|xhigh|max`. Mesuré le 13/11/2026 : `--effort high` résout
+`gemini-4-hydrogen-high`, `--effort low` résout `gemini-4-hydrogen-low` (log `model_resolver.go`).
+Le label renvoyé à l'enveloppe reste `Gemini 4 Hydrogen (High)`. Re-vérifier :
+
+```bash
+grep -n "resolved to" ~/.gemini/antigravity-cli/log/$(ls -t ~/.gemini/antigravity-cli/log/ | head -1)
 ```
